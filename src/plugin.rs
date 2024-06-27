@@ -50,9 +50,8 @@ impl BuiltinDemoPlugin {
                 .iter()
                 .flat_map(|el| {
                     if let ast::ModuleItem::Impl(impl_ast) = el {
-                        // The error was that, we need to have a Mapped node here. To ensure the origin
-                        // is correctly taken from the replaced node instead of the origin being the
-                        // attribute.
+                        // Ok, so now we can point to the impl instead of the #[custom::contract].
+                        // But still, we want to target `impl A of B {}` for the diagnostic.
                         return vec![RewriteNode::Mapped {
                             node: Box::new(RewriteNode::Text("impl A of B {}".to_string())),
                             origin: impl_ast.as_syntax_node().span_without_trivia(db),
