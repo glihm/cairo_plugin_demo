@@ -14,6 +14,9 @@ use scarb::compiler::plugin::{CairoPlugin, CairoPluginInstance};
 use scarb::core::{PackageId, PackageName, SourceId};
 use semver::Version;
 use url::Url;
+use cairo_lang_syntax::attribute::structured::{
+    AttributeArg, AttributeArgVariant, AttributeStructurize,
+};
 
 pub const PACKAGE_NAME: &str = "cairo_plugin_demo";
 pub const MY_ATTR: &str = "custom::contract";
@@ -31,6 +34,9 @@ impl BuiltinDemoPlugin {
             };
         }
 
+        let custom_attr = module_ast.find_attr(db, MY_ATTR).unwrap();
+        let origin = custom_attr.as_syntax_node().span_without_trivia(db);
+
         let name = module_ast.name(db).text(db);
 
         //let mut diagnostics = vec![];
@@ -43,17 +49,20 @@ impl BuiltinDemoPlugin {
                 .elements(db)
                 .iter()
                 .flat_map(|el| {
-                    if let ast::ModuleItem::Impl(_impl_ast) = el {
-                        // Case 1:
-                        // If we uncomment the return here, the diagnostic pointer will be incorrect,
-                        // and always point to the attribute that generated the code.
-                        // return vec![RewriteNode::Text("impl A of B {}".to_string())];
+                    if let ast::ModuleItem::Impl(impl_ast) = el {
+                        // The error was that, we need to have a Mapped node here. To ensure the origin
+                        // is correctly taken from the replaced node instead of the origin being the
+                        // attribute.
+                        return vec![RewriteNode::Mapped {
+                            node: Box::new(RewriteNode::Text("impl A of B {}".to_string())),
+                            origin: impl_ast.as_syntax_node().span_without_trivia(db),
+                        }];
 
                         // Case 2:
                         // Even if we try to add the node directly to the builder,
                         // the diagnostic pointer will be incorrect.
-                        //builder.add_modified(RewriteNode::Text("impl A of B {}".to_string()));
-                        //return vec![];
+                        // builder.add_modified(RewriteNode::Text("impl A of B {}".to_string()));
+                        // return vec![];
                     }
 
                     vec![RewriteNode::Copied(el.as_syntax_node())]
@@ -74,10 +83,12 @@ impl BuiltinDemoPlugin {
                 &UnorderedHashMap::from([
                     ("name".to_string(), RewriteNode::Text(name.to_string())),
                     ("body".to_string(), RewriteNode::new_modified(body_nodes)),
-                ]),
+                    ]),
             ));
 
             let (code, code_mappings) = builder.build();
+
+            println!("{:?}", code_mappings);
 
             return PluginResult {
                 code: Some(PluginGeneratedFile {
