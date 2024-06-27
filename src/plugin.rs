@@ -48,17 +48,19 @@ impl BuiltinDemoPlugin {
                 .iter()
                 .flat_map(|el| {
                     if let ast::ModuleItem::Impl(_impl_ast) = el {
+                        // Case 1:
                         // If we uncomment the return here, the diagnostic pointer will be incorrect,
                         // and always point to the attribute that generated the code.
                         // return vec![RewriteNode::Text("impl A of B {}".to_string())];
 
+                        // Case 2:
                         // Even if we try to add the node directly to the builder,
                         // the diagnostic pointer will be incorrect.
-                        builder.add_modified(RewriteNode::Text("impl A of B {}".to_string()));
-                        vec![]
-                    } else {
-                        vec![RewriteNode::Copied(el.as_syntax_node())]
+                        //builder.add_modified(RewriteNode::Text("impl A of B {}".to_string()));
+                        //return vec![];
                     }
+
+                    vec![RewriteNode::Copied(el.as_syntax_node())]
                 })
                 .collect();
 

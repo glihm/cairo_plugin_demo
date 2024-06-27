@@ -21,3 +21,7 @@ If a child node is re-written, the diagnostic pointer is incorrect.
 
 - `lib,cairo` -> A simple custom contract, that expands to a Starknet contract.
 - `plugin.rs` -> The plugin attempts to rewrite the module with the `#[custom::contract]` attribute, replacing the original one. But during this process, if the `impl` node (children of the module) is re-written, the diagnostic pointer is incorrect.
+
+So if you uncomment the `return 1_u256` into the `lib.cairo` only by copying the children nodes of the module into `plugin.rs`, the diagnostic pointer will be correct.
+
+However, if you uncomment some code into `plugin.rs` that re-write a children node, the diagnostic pointer will be incorrect.
