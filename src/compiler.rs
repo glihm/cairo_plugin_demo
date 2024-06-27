@@ -37,16 +37,11 @@ impl Compiler for DemoCompiler {
 
         let main_crate_ids = collect_main_crate_ids(&unit, db);
 
-        let contracts = find_contracts(
-            db.upcast_mut(),
-            &main_crate_ids,
-        );
+        let contracts = find_contracts(db.upcast_mut(), &main_crate_ids);
 
         let contracts = contracts.iter().collect::<Vec<_>>();
 
-        let classes = {
-            compile_prepared_db(db, &contracts, compiler_config)?
-        };
+        let classes = { compile_prepared_db(db, &contracts, compiler_config)? };
 
         for (decl, class) in zip(contracts, classes) {
             let contract_full_path = decl.module_id().full_path(db.upcast_mut());
@@ -63,7 +58,9 @@ impl Compiler for DemoCompiler {
                             format!("failed to serialize contract source: {contract_full_path}")
                         })?;
                 } else {
-                    return Err(anyhow!("failed to get source file content: {contract_full_path}"));
+                    return Err(anyhow!(
+                        "failed to get source file content: {contract_full_path}"
+                    ));
                 }
             } else {
                 return Err(anyhow!("failed to get source file: {contract_full_path}"));

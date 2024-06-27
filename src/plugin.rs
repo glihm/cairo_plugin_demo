@@ -4,16 +4,16 @@ use cairo_lang_defs::plugin::{
     MacroPlugin, MacroPluginMetadata, PluginGeneratedFile, PluginResult,
 };
 use cairo_lang_semantic::plugin::PluginSuite;
+use cairo_lang_syntax::node::ast::MaybeModuleBody;
 use cairo_lang_syntax::node::db::SyntaxGroup;
 use cairo_lang_syntax::node::helpers::QueryAttrs;
 use cairo_lang_syntax::node::{ast, Terminal, TypedSyntaxNode};
-use cairo_lang_syntax::node::ast::MaybeModuleBody;
+use cairo_lang_utils::unordered_hash_map::UnorderedHashMap;
 use scarb::compiler::plugin::builtin::BuiltinStarkNetPlugin;
 use scarb::compiler::plugin::{CairoPlugin, CairoPluginInstance};
 use scarb::core::{PackageId, PackageName, SourceId};
 use semver::Version;
 use url::Url;
-use cairo_lang_utils::unordered_hash_map::UnorderedHashMap;
 
 pub const PACKAGE_NAME: &str = "cairo_plugin_demo";
 pub const MY_ATTR: &str = "custom::contract";
@@ -22,11 +22,7 @@ pub const MY_ATTR: &str = "custom::contract";
 pub struct BuiltinDemoPlugin;
 
 impl BuiltinDemoPlugin {
-    pub fn handle_mod(
-        &self,
-        db: &dyn SyntaxGroup,
-        module_ast: &ast::ItemModule,
-    ) -> PluginResult {
+    pub fn handle_mod(&self, db: &dyn SyntaxGroup, module_ast: &ast::ItemModule) -> PluginResult {
         if !module_ast.has_attr(db, MY_ATTR) {
             return PluginResult {
                 code: None,

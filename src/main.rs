@@ -1,6 +1,6 @@
 use anyhow::Result;
 use camino::Utf8PathBuf;
-use scarb::compiler::{Profile, CompilerRepository};
+use scarb::compiler::{CompilerRepository, Profile};
 use scarb::core::{Config, TargetKind};
 use scarb::ops::{CompileOpts, FeaturesOpts, FeaturesSelector};
 use std::env;
@@ -13,9 +13,12 @@ pub mod plugin;
 pub mod scarb_funcs;
 
 fn main() -> Result<()> {
-    let manifest = Utf8PathBuf::from(std::fs::canonicalize("./demo_code/Scarb.toml")?.as_os_str().to_string_lossy().to_string());
-
-    println!("manifest: {manifest}");
+    let manifest = Utf8PathBuf::from(
+        std::fs::canonicalize("./demo_code/Scarb.toml")?
+            .as_os_str()
+            .to_string_lossy()
+            .to_string(),
+    );
 
     let mut compilers = CompilerRepository::std();
     compilers.add(Box::new(DemoCompiler)).unwrap();
@@ -35,7 +38,7 @@ fn main() -> Result<()> {
         features: FeaturesOpts {
             features: FeaturesSelector::AllFeatures,
             no_default_features: false,
-        }
+        },
     };
 
     scarb_funcs::compile_workspace(&config, opts)?;

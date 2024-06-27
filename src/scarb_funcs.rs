@@ -60,7 +60,10 @@ pub fn crates_config_for_compilation_unit(unit: &CairoCompilationUnit) -> AllCra
         })
         .collect();
 
-    AllCratesConfig { override_map: crates_config, ..Default::default() }
+    AllCratesConfig {
+        override_map: crates_config,
+        ..Default::default()
+    }
 }
 
 /// Builds the scarb root database injecting the dojo plugin suite, additionaly to the
@@ -85,15 +88,23 @@ pub fn compile_workspace(config: &Config, opts: CompileOpts) -> Result<CompileIn
     let packages: Vec<scarb::core::PackageId> = ws.members().map(|p| p.id).collect();
     let resolve = scarb::ops::resolve_workspace(&ws)?;
 
-    let features_opts =
-        FeaturesOpts { features: FeaturesSelector::AllFeatures, no_default_features: false };
+    let features_opts = FeaturesOpts {
+        features: FeaturesSelector::AllFeatures,
+        no_default_features: false,
+    };
 
     let compilation_units = scarb::ops::generate_compilation_units(&resolve, &features_opts, &ws)?
         .into_iter()
-        .filter(|cu| !opts.exclude_targets.contains(&cu.main_component().target_kind()))
+        .filter(|cu| {
+            !opts
+                .exclude_targets
+                .contains(&cu.main_component().target_kind())
+        })
         .filter(|cu| {
             opts.include_targets.is_empty()
-                || opts.include_targets.contains(&cu.main_component().target_kind())
+                || opts
+                    .include_targets
+                    .contains(&cu.main_component().target_kind())
         })
         .filter(|cu| packages.contains(&cu.main_package_id()))
         .collect::<Vec<_>>();
@@ -103,7 +114,11 @@ pub fn compile_workspace(config: &Config, opts: CompileOpts) -> Result<CompileIn
         if let CompilationUnit::Cairo(unit) = unit {
             let mut db = build_scarb_root_database(&unit).unwrap();
 
-            if let Err(err) = ws.config().compilers().compile(unit.clone(), &mut (db), &ws) {
+            if let Err(err) = ws
+                .config()
+                .compilers()
+                .compile(unit.clone(), &mut (db), &ws)
+            {
                 ws.config().ui().anyhow(&err);
                 compile_error_units.push(unit.name());
             }
@@ -124,8 +139,11 @@ pub fn compile_workspace(config: &Config, opts: CompileOpts) -> Result<CompileIn
         None
     };
 
-    let profile_name =
-        if let Ok(p) = ws.current_profile() { p.to_string() } else { "NO_PROFILE".to_string() };
+    let profile_name = if let Ok(p) = ws.current_profile() {
+        p.to_string()
+    } else {
+        "NO_PROFILE".to_string()
+    };
 
     Ok(CompileInfo {
         manifest_path,
@@ -143,7 +161,12 @@ fn build_project_config(unit: &CairoCompilationUnit) -> Result<ProjectConfig> {
         .filter(|model| !model.package.id.is_core())
         // NOTE: We're taking the first target of each compilation unit, which should always be the
         //       main package source root due to the order maintained by scarb.
-        .map(|model| (model.cairo_package_name(), model.first_target().source_root().into()))
+        .map(|model| {
+            (
+                model.cairo_package_name(),
+                model.first_target().source_root().into(),
+            )
+        })
         .collect();
 
     let corelib =
@@ -156,8 +179,11 @@ fn build_project_config(unit: &CairoCompilationUnit) -> Result<ProjectConfig> {
         crates_config: crates_config_for_compilation_unit(unit),
     };
 
-    let project_config =
-        ProjectConfig { base_path: unit.main_component().package.root().into(), corelib, content };
+    let project_config = ProjectConfig {
+        base_path: unit.main_component().package.root().into(),
+        corelib,
+        content,
+    };
 
     println!("{:?}", project_config);
 
