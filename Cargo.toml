@@ -33,9 +33,6 @@ cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo", rev = "d99
 scarb = { git = "https://github.com/software-mansion/scarb", rev = "f1aa7b09507a84d209d83b2fa80472c82605cc43" }
 scarb-ui = { git = "https://github.com/software-mansion/scarb", rev = "f1aa7b09507a84d209d83b2fa80472c82605cc43" }
 semver = "1.0.5"
-serde = { version = "1.0", features = [ "derive" ] }
 serde_json = { version = "1.0", features = [ "arbitrary_precision" ] }
-serde_with = "2.3"
 smol_str = { version = "0.2.0", features = [ "serde" ] }
-starknet = "0.10.0"
 url = { version = "2.4.0", features = [ "serde" ] }
