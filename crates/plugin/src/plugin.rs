@@ -207,7 +207,7 @@ impl MacroPlugin for BuiltinDemoPlugin {
                 } else {
                     PluginResult::default()
                 }
-            },
+            }
             _ => PluginResult::default(),
         }
     }
@@ -243,10 +243,7 @@ pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> 
         .as_syntax_node()
         .get_text(db);
 
-    let params_str = rewrite_parameters(
-        db,
-        fn_ast.declaration(db).signature(db).parameters(db),
-    );
+    let params_str = rewrite_parameters(db, fn_ast.declaration(db).signature(db).parameters(db));
 
     let declaration_node = RewriteNode::Mapped {
         node: Box::new(RewriteNode::Text(format!(
@@ -293,10 +290,7 @@ pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> 
 /// # Returns
 ///
 /// * The rewritten parameters as a string.
-pub fn rewrite_parameters(
-    db: &dyn SyntaxGroup,
-    param_list: ast::ParamList,
-) -> String {
+pub fn rewrite_parameters(db: &dyn SyntaxGroup, param_list: ast::ParamList) -> String {
     let mut use_ref = false;
 
     let mut params = param_list

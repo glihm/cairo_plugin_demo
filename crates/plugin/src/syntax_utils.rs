@@ -21,8 +21,23 @@ pub struct ParamInfo {
 /// * A tuple containing the name, modifiers and type of the parameter.
 pub fn get_parameter_info(db: &dyn SyntaxGroup, param: ast::Param) -> ParamInfo {
     let name = param.name(db).text(db).trim().to_string();
-    let modifiers = param.modifiers(db).as_syntax_node().get_text(db).trim().to_string();
-    let param_type = param.type_clause(db).ty(db).as_syntax_node().get_text(db).trim().to_string();
+    let modifiers = param
+        .modifiers(db)
+        .as_syntax_node()
+        .get_text(db)
+        .trim()
+        .to_string();
+    let param_type = param
+        .type_clause(db)
+        .ty(db)
+        .as_syntax_node()
+        .get_text(db)
+        .trim()
+        .to_string();
 
-    ParamInfo { name, modifiers, param_type }
+    ParamInfo {
+        name,
+        modifiers,
+        param_type,
+    }
 }
