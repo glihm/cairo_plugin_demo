@@ -82,7 +82,7 @@ impl BuiltinDemoPlugin {
                                 .iter_items_in_cfg(db, metadata.cfg_set)
                                 .flat_map(|el| {
                                     if let ast::ImplItem::Function(ref fn_ast) = el {
-                                        return rewrite_function(db, fn_ast.clone());
+                                        rewrite_function(db, fn_ast.clone())
                                     } else {
                                         vec![RewriteNode::Copied(el.as_syntax_node())]
                                     }
@@ -217,6 +217,7 @@ impl MacroPlugin for BuiltinDemoPlugin {
     }
 }
 
+#[derive(Debug)]
 pub struct CairoPluginRepository(scarb::compiler::plugin::CairoPluginRepository);
 
 impl Default for CairoPluginRepository {

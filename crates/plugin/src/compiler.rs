@@ -17,6 +17,7 @@ use scarb::core::{TargetKind, Workspace};
 
 pub const SOURCES_DIR: &str = "src";
 
+#[derive(Debug)]
 pub struct DemoCompiler;
 
 impl Compiler for DemoCompiler {
