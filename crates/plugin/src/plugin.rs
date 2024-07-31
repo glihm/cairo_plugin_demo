@@ -67,7 +67,7 @@ impl BuiltinDemoPlugin {
                         // diagnostics.
                         let impl_node = RewriteNode::Mapped {
                             node: Box::new(RewriteNode::Text(format!(
-                                "{} impl {} of {} {{",
+                                "{} impl {} of {} {{\n",
                                 impl_ast.attributes(db).as_syntax_node().get_text(db),
                                 impl_name,
                                 impl_ast.trait_path(db).as_syntax_node().get_text(db),
@@ -104,7 +104,7 @@ impl BuiltinDemoPlugin {
                             impl_nodes.push(mapped_node);
                         }
 
-                        impl_nodes.push(RewriteNode::Text("}".to_string()));
+                        impl_nodes.push(RewriteNode::Text("\n}".to_string()));
                         return impl_nodes;
                     }
 
@@ -114,7 +114,7 @@ impl BuiltinDemoPlugin {
                 .collect();
 
             // Add a standalone struct.
-            body_nodes.append(&mut vec![RewriteNode::Text("struct S {}".to_string())]);
+            body_nodes.append(&mut vec![RewriteNode::Text("\nstruct S {}\n".to_string())]);
 
             builder.add_modified(RewriteNode::interpolate_patched(
                 "
@@ -250,7 +250,7 @@ pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> 
 
     let declaration_node = RewriteNode::Mapped {
         node: Box::new(RewriteNode::Text(format!(
-            "fn {}({}) {} {{",
+            "fn {}({}) {} {{\n",
             fn_name, params_str, return_type
         ))),
         origin: fn_ast
@@ -260,8 +260,8 @@ pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> 
     };
 
     // Add some new statements inside the function before user's ones.
-    let additional_node1 = RewriteNode::Text("let a = 32;".to_string());
-    let additional_node2 = RewriteNode::Text("let _b = a + 4;".to_string());
+    let additional_node1 = RewriteNode::Text("let a = 32;\n".to_string());
+    let additional_node2 = RewriteNode::Text("let _b = a + 4;\n".to_string());
 
     let func_nodes = fn_ast
         .body(db)
@@ -276,7 +276,7 @@ pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> 
 
     let mut nodes = vec![declaration_node, additional_node1, additional_node2];
     nodes.extend(func_nodes);
-    nodes.push(RewriteNode::Text("}".to_string()));
+    nodes.push(RewriteNode::Text("\n}".to_string()));
 
     nodes
 }

@@ -185,7 +185,7 @@ fn build_project_config(unit: &CairoCompilationUnit) -> Result<ProjectConfig> {
         content,
     };
 
-    println!("{:?}", project_config);
+    // dbg!(&project_config);
 
     Ok(project_config)
 }

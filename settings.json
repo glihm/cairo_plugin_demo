@@ -1,0 +1,10 @@
+{
+  "cairo1.languageServerPath": "/path/cairo-plugin/target/release/demo-ls",
+  "cairo1.enableScarb": false,
+  "cairo1.preferScarbLanguageServer": false,
+  "cairo1.languageServerExtraEnv": {
+    "SCARB": "/path/.asdf/installs/scarb/2.7.0-rc.4/bin/scarb",
+    "CAIRO_LS_LOG": "cairo_lang_language_server=trace",
+    "SCARB_LOG": "scarb=trace"
+  }
+}
