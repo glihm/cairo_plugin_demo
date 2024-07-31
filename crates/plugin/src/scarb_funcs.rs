@@ -97,13 +97,13 @@ pub fn compile_workspace(config: &Config, opts: CompileOpts) -> Result<CompileIn
         .into_iter()
         .filter(|cu| {
             !opts
-                .exclude_targets
+                .exclude_target_kinds
                 .contains(&cu.main_component().target_kind())
         })
         .filter(|cu| {
-            opts.include_targets.is_empty()
+            opts.include_target_kinds.is_empty()
                 || opts
-                    .include_targets
+                    .include_target_kinds
                     .contains(&cu.main_component().target_kind())
         })
         .filter(|cu| packages.contains(&cu.main_package_id()))

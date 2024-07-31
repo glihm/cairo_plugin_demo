@@ -5,16 +5,23 @@ use scarb::core::{Config, TargetKind};
 use scarb::ops::{CompileOpts, FeaturesOpts, FeaturesSelector};
 use std::env;
 
-use compiler::DemoCompiler;
-use plugin::CairoPluginRepository;
+use demo_plugin::{compiler::DemoCompiler, plugin::CairoPluginRepository, scarb_funcs};
 
-pub mod compiler;
-pub mod plugin;
-pub mod scarb_funcs;
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Path to the Scarb.toml file
+    #[arg(short, long, value_name = "MANIFEST_FILE_PATH")]
+    manifest_path: Utf8PathBuf,
+}
 
 fn main() -> Result<()> {
+    let cli = Cli::parse();
+
     let manifest = Utf8PathBuf::from(
-        std::fs::canonicalize("./demo_code/Scarb.toml")?
+        std::fs::canonicalize(cli.manifest_path)?
             .as_os_str()
             .to_string_lossy()
             .to_string(),
@@ -33,8 +40,9 @@ fn main() -> Result<()> {
         .build()?;
 
     let opts = CompileOpts {
-        include_targets: vec![],
-        exclude_targets: vec![TargetKind::TEST],
+        include_target_kinds: vec![],
+        include_target_names: vec![],
+        exclude_target_kinds: vec![TargetKind::TEST],
         features: FeaturesOpts {
             features: FeaturesSelector::AllFeatures,
             no_default_features: false,
