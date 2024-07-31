@@ -156,7 +156,7 @@ impl CairoPlugin for BuiltinDemoPlugin {
     fn id(&self) -> PackageId {
         let url =
             Url::parse(format!("https://github.com/glihm/{}", PACKAGE_NAME).as_str()).unwrap();
-        let version = "0.1.0";
+        let version = "0.2.0";
 
         let source_id = SourceId::for_git(
             &url,
