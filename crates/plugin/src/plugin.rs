@@ -82,7 +82,7 @@ impl BuiltinDemoPlugin {
                                 .iter_items_in_cfg(db, metadata.cfg_set)
                                 .flat_map(|el| {
                                     if let ast::ImplItem::Function(ref fn_ast) = el {
-                                        rewrite_function(db, fn_ast.clone())
+                                        rewrite_function(db, fn_ast.clone(), &mut diagnostics)
                                     } else {
                                         vec![RewriteNode::Copied(el.as_syntax_node())]
                                     }
@@ -235,7 +235,11 @@ impl From<CairoPluginRepository> for scarb::compiler::plugin::CairoPluginReposit
     }
 }
 
-pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> Vec<RewriteNode> {
+pub fn rewrite_function(
+    db: &dyn SyntaxGroup,
+    fn_ast: ast::FunctionWithBody,
+    diagnostics: &mut Vec<PluginDiagnostic>,
+) -> Vec<RewriteNode> {
     let fn_name = fn_ast.declaration(db).name(db).text(db);
     let return_type = fn_ast
         .declaration(db)
@@ -266,9 +270,24 @@ pub fn rewrite_function(db: &dyn SyntaxGroup, fn_ast: ast::FunctionWithBody) -> 
         .statements(db)
         .elements(db)
         .iter()
-        .map(|e| RewriteNode::Mapped {
-            node: Box::new(RewriteNode::from(e.as_syntax_node())),
-            origin: e.as_syntax_node().span_without_trivia(db),
+        .map(|e| {
+            if e.as_syntax_node()
+                .get_text(db)
+                .trim()
+                .starts_with("let fail = 1")
+            {
+                // Add an other plugin diagnostic inside a function to check plugin diagnostic handling.
+                diagnostics.push(PluginDiagnostic::error(
+                    e.stable_ptr().untyped(),
+                    "Invalid statement starting with 'let fail = 1'".to_string(),
+                ));
+                RewriteNode::Copied(e.as_syntax_node())
+            } else {
+                RewriteNode::Mapped {
+                    node: Box::new(RewriteNode::from(e.as_syntax_node())),
+                    origin: e.as_syntax_node().span_without_trivia(db),
+                }
+            }
         })
         .collect::<Vec<_>>();
 
