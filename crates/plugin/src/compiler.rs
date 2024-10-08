@@ -34,7 +34,8 @@ impl Compiler for DemoCompiler {
         let target_dir = unit.target_dir(ws);
         let sources_dir = target_dir.child(Utf8Path::new(SOURCES_DIR));
 
-        let compiler_config = build_compiler_config(&unit, ws);
+        let main_crate_ids = collect_main_crate_ids(&unit, db);
+        let compiler_config = build_compiler_config(db, &unit, &main_crate_ids, ws);
 
         let main_crate_ids = collect_main_crate_ids(&unit, db);
 
@@ -53,7 +54,7 @@ impl Compiler for DemoCompiler {
                     let src_file_name = format!("{contract_full_path}.cairo").replace("::", "_");
 
                     let mut file =
-                        sources_dir.open_rw(src_file_name.clone(), "source file", ws.config())?;
+                        sources_dir.create_rw(src_file_name.clone(), "source file", ws.config())?;
                     file.write(format_string(db, file_content.to_string()).as_bytes())
                         .with_context(|| {
                             format!("failed to serialize contract source: {contract_full_path}")
@@ -68,7 +69,7 @@ impl Compiler for DemoCompiler {
             }
 
             let file_name = format!("{contract_full_path}.sierra.json");
-            let mut file = target_dir.open_rw(file_name.clone(), "class file", ws.config())?;
+            let mut file = target_dir.create_rw(file_name.clone(), "class file", ws.config())?;
             serde_json::to_writer_pretty(file.deref_mut(), &class).with_context(|| {
                 format!("failed to serialize contract artifact: {contract_full_path}")
             })?;

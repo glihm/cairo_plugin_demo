@@ -12,6 +12,7 @@ mod contract {
         // Self will be automatically added by the plugin.
         // Or use `r: R` to inject ref self instead.
         fn my_method() -> i32 {
+            fehihf
             let fail = 1;
             42
         }

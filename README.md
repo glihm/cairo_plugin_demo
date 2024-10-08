@@ -16,7 +16,7 @@ This repo is mainly for debugging and experimentation.
 ## Test on VSCode
 
 1. Build the language server with `cargo build -r --bin demo-ls`.
-2. Install the extension built for `2.7.0-rc-3` present in the repositoy (`cairo1-2.7.0-rc.3.vsix`). In VSCode you have in the extension panel a button to `Install from VSIX`.
+2. Install the Cairo extension for VSCode (`2.8.0`).
 3. Adjust the paths inside `settings.json` and use this file setting into VSCode.
 4. Open the folder `contracts`.
 5. Open the file `lib.cairo`.

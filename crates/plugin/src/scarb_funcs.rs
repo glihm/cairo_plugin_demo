@@ -55,6 +55,7 @@ pub fn crates_config_for_compilation_unit(unit: &CairoCompilationUnit) -> AllCra
                         coupons: experimental_features.contains(&SmolStr::new_inline("coupons")),
                     },
                     cfg_set: component.cfg_set.clone(),
+                    version: Some(component.package.id.version.clone()),
                 },
             )
         })
